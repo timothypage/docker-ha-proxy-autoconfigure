@@ -1,0 +1,40 @@
+defaults
+    mode    http
+    retries 3
+    option redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+
+frontend www
+	bind *:80
+	<%- services.each do |service| -%>
+	acl <%= service.name %>_host hdr(host) -i <%= "#{service.name}.#{tld}" %>
+	<%- end -%>
+
+	<%- services.each do |service| -%>
+	use_backend <%= service.name %>_cluster if <%= service.name %>_host
+	<%- end -%>
+
+	default_backend nginx
+
+
+<%- services.each do |service| -%>
+backend <%= service.name %>_cluster
+	option httpclose
+	option forwardfor
+	<%- service.containers.each_with_index do |container, index| -%>
+	server <%= service.name %><%= index %> <%= container.ip %>:80
+	<%- end -%>
+	<%- if service.containers.empty? -%>
+	server force_502_<%= service.name %> 127.0.0.1:65535
+	<%- end -%>
+
+<%- end -%>
+
+
+backend nginx
+	mode http
+	option httpclose
+	option forwardfor
+	server badconfig 127.0.0.1:65535

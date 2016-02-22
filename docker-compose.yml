@@ -1,0 +1,15 @@
+app:
+  image: tutum/hello-world:latest
+  ports:
+    - 80
+  net: yggdrasil
+  labels:
+    sxg.service: hello_world
+
+app2:
+  image: nginx
+  ports:
+    - 80
+  net: yggdrasil
+  labels:
+    sxg.service: nginx
