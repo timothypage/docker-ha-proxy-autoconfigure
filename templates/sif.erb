@@ -1,0 +1,16 @@
+server {
+  server_name <%= hostname %>
+
+  include /etc/nginx/nginx-includes/nginx-ssl-include.conf;
+
+  include /etc/nginx/nginx-includes/nginx-role-include.conf;
+
+  client_max_body_size 100M;
+
+  location / {
+    auth_request /has-role/<%= role %>;
+
+    proxy_pass http://<%= name %>:<%= port %>;
+    proxy_set_header  Host  $host;
+  }
+}

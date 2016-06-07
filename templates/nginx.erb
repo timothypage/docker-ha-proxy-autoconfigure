@@ -1,0 +1,23 @@
+upstream <%= name %> {
+  <% if containers.empty? %>
+  server 127.0.0.1:65535;
+  <% else %>
+  <% containers.each do |container| %>
+  server <%= container.ip %>:<%= container.port %>;
+  <% end %>
+  <% end %>
+}
+
+server {
+  listen 80;
+  server_name <%= name.gsub("_", "-") %>.sxglocal.com;
+
+  client_max_body_size 100M;
+
+  location / {
+    proxy_pass http://<%= name %>;
+    proxy_set_header  Host  $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  }
+}

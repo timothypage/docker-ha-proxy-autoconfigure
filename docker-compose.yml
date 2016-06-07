@@ -1,15 +1,52 @@
-app:
-  image: tutum/hello-world:latest
+green_app:
+  image: timothypage/container-info
   ports:
-    - 80
+    - 9292
   net: yggdrasil
+  environment:
+    - COLOR=green
   labels:
-    sxg.service: hello_world
+    sxg.service: green_app
+    sxg.port: "9292"
 
-app2:
+blue_app:
+  image: timothypage/container-info
+  ports:
+    - 9292
+  net: yggdrasil
+  environment:
+    - COLOR=blue
+  labels:
+    sxg.service: blue_app
+    sxg.port: "9292"
+
+yellow_app:
+  image: timothypage/container-info
+  ports:
+    - 9292
+  net: yggdrasil
+  environment:
+    - COLOR=#E2DB74
+  labels:
+    sxg.service: yellow_app
+    sxg.port: "9292"
+
+
+basic_app:
   image: nginx
   ports:
     - 80
   net: yggdrasil
   labels:
-    sxg.service: nginx
+    sxg.service: basic_app
+    sxg.port: "80"
+
+router:
+  image: panamax.spectrumxg.com/yggdrasil/sif-auth-proxy:0.7.0
+  ports:
+    - "80:80"
+  net: yggdrasil
+  volumes:
+    - "./nginx_confs:/etc/nginx/sites-enabled"
+  labels:
+    sxg.service: router
